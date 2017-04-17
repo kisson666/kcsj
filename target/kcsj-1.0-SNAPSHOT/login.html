@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>请登录</title>
+<link rel="stylesheet" href="css/lrtk.css">
+</head>
+<body>
+<!-- 代码 开始 -->
+<div id="login">
+    <div class="wrapper">
+        <div class="login">
+            <form  id='loginform'  method="post" class="container offset1 loginform"> <!--javascript:void(0)表示默认动作不执行了,如果不写action 点submit的时候会默认提交到本地址 会刷新,所以要么用button提交 要么用void（0）-->
+                <div id="owl-login">
+                    <div class="hand"></div>
+                    <div class="hand hand-r"></div>
+                    <div class="arms">
+                        <div class="arm"></div>
+                        <div class="arm arm-r"></div>
+                    </div>
+                </div>
+                <div class="pad">
+                    <!--<input type="hidden" name="_csrf" value="9IAtUxV2CatyxHiK2LxzOsT6wtBE6h8BpzOmk=">-->
+                    <div class="control-group">
+                        <div class="controls">
+                            <label for="email" class="control-label fa fa-envelope"></label>
+                            <input id="email" type="email" name="email" placeholder="Email" tabindex="1" autofocus="autofocus" class="form-control input-medium">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="controls">
+                            <label for="password" class="control-label fa fa-asterisk"></label>
+                            <input id="password" type="password" name="password" placeholder="Password" tabindex="2" class="form-control input-medium">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions"><a href="http://www.htmlsucai.com" tabindex="5" class="btn pull-left btn-link text-muted">Forgot password?</a><a href="http://www.htmlsucai.com" tabindex="6" class="btn btn-link text-muted">Sign Up</a>
+                    <button type="button" tabindex="4" class="btn btn-primary" id="btn_kisson" >Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery.serializejson.js"></script>
+    <script>
+    $(function() {
+
+        $('#login #password').focus(function() {
+            $('#owl-login').addClass('password');
+        }).blur(function() {
+            $('#owl-login').removeClass('password');
+        });
+    });
+    </script>
+    <script>
+//        <!--以下js代码为自己写的ajax-->
+        function getUser() {
+            console.log($('#loginform').serializeJSON());
+            console.log(JSON.stringify($('#loginform').serializeJSON()));  //这样可以得到字符串 不是json对象 @requestbody需要的是json字符串
+            return JSON.stringify($('#loginform').serializeJSON());
+        }
+        $(function() {
+            $('#btn_kisson').click(function () {
+                var data = getUser();
+                $.ajax({
+                    type:'post',
+                    url:'/user/identify',
+                    data:data,
+                    dataType:'json',
+                    contentType:'application/json',
+                    success:function (data) {
+                        if (data.status == 0){
+                            window.location.href = 'index.html';     //怎么让alert的同时跳转过去 怎么给个登录成功的通知后自动跳转 不需要点alert的确定
+                            setTimeout(function () {
+                                alert('登录成功，点击确定跳转到主页');  //异步延迟执行 先执行下面的 到时候再执行这里
+                            },1);
+                        } else {
+                            alert(data.errmsg);
+                        }
+                        console.log(data);
+//                        alert(data.status);
+                    },
+                    error:function () {
+                        alert('登录失败，请重试');
+                    }
+                })
+//                return false;  这是阻止提交表单 调试的时候用
+            })
+        })
+    </script>
+</div>
+<!-- 代码 结束 -->
+<div style="text-align:center;margin:200px 0 0 0">
+　
+<p>＊这是我在网上找的模板，因为我的前端真的太烂了</p>
+    <p>来源：<a href="http://www.htmlsucai.com" target="_blank">readme.io</a>　代码整理：<a href="http://www.htmlsucai.com" target="_blank">HTML素材网</a>感谢：<a href="http://www.htmlsucai.com" target="_blank">买机油网</a></p>
+<p></p>
+<!--<p><p>超萌的猫头鹰登录界面，当输入密码的时候，猫头鹰会用翅膀遮住双眼，兼容主流浏览器，HTML素材网推荐下载！</p><p><br /></p><p>使用方法：</p><p>1、head区域引用文件lrtk.css及jquery.min.js</p><p>2、在文件中加入&lt;!&#45;&#45; 代码 开始 &#45;&#45;&gt;&lt;!&#45;&#45; 代码 结束 &#45;&#45;&gt;区域代码， </p><p>3、复制images文件夹, fonts文件夹。</p></p>-->
+<p style="margin:20px 0"></p>
+</div>
+</body>
+</html>

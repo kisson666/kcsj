@@ -1,0 +1,992 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>课程设计_学生信息管理系统主页</title>
+		<link href="css/file.css" rel="stylesheet" />   <!--引入美化file input的样式-->
+		<link href="css/pre_show.css">  <!--引入预览上传图的样式 控制大小-->
+		<!--<meta name="keywords" content="Bootstrap模版,Bootstrap模版下载,Bootstrap教程,Bootstrap中文" />-->
+		<!--<meta name="description" content="站长素材提供Bootstrap模版,Bootstrap教程,Bootstrap中文翻译等相关Bootstrap插件下载" />-->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery-form.js"></script>
+		<script>
+			<!--点击修改头像按钮时候 当前头像消失-->
+			$(function () {
+				$('#user_ico').click(function () {
+					$('#avatar_kisson').hide();
+				});
+//				$('#upload_ico_kisson').hide(); <!--先把提交头像修改的按钮隐藏 file input onchange的时候再出现-->
+			})
+		</script>
+		<script>
+			<!--file input onchange调用-->
+			function show_button() {
+				$('#upload_ico_kisson').show();
+				$('#undo_ico_kisson').show();
+				$('#pre_show_kisson').show();  //点取消修改头像的时候显示原来头像的div 隐藏预览的div 再次选择图片file的时候显示预览div 防止预览div不显示
+			}
+		</script>
+		<script type="text/javascript">
+			var  loadImageFile= (function () {
+				if (window.FileReader) {
+					var oPreviewImg = null, oFReader = new window.FileReader(),
+							rFilter = /^(?:image\/bmp|image\/cis\-cod|image\/gif|image\/ief|image\/jpeg|image\/jpeg|image\/jpeg|image\/pipeg|image\/png|image\/svg\+xml|image\/tiff|image\/x\-cmu\-raster|image\/x\-cmx|image\/x\-icon|image\/x\-portable\-anymap|image\/x\-portable\-bitmap|image\/x\-portable\-graymap|image\/x\-portable\-pixmap|image\/x\-rgb|image\/x\-xbitmap|image\/x\-xpixmap|image\/x\-xwindowdump)$/i;
+
+
+					oFReader.onload = function (oFREvent) {
+						if (!oPreviewImg) {
+							var newPreview = document.getElementById("pre_show_kisson");
+							oPreviewImg = new Image();
+//							oPreviewImg.style.width = (newPreview.offsetWidth).toString() + "px";
+//							oPreviewImg.style.height = (newPreview.offsetHeight).toString() + "px";
+//							oPreviewImg.style.width = "304px";
+//							oPreviewImg.style.height = "200px";
+							oPreviewImg.className = "editable img-responsive";
+							newPreview.appendChild(oPreviewImg);
+						}
+						oPreviewImg.src = oFREvent.target.result;
+					};
+
+
+					return function () {
+						var aFiles = document.getElementById("user_ico").files;
+						if (aFiles.length === 0) { return; }
+						if (!rFilter.test(aFiles[0].type)) { alert("You must select a valid image file!"); return; }
+						oFReader.readAsDataURL(aFiles[0]);
+					}
+
+
+				}
+				if (navigator.appName === "Microsoft Internet Explorer") {
+					return function () {
+						alert(document.getElementById("user_ico").value);
+						document.getElementById("pre_show_kisson").filters.item("DXImageTransform.Microsoft.AlphaImageLoader").src = document.getElementById("user_ico").value;
+
+
+					}
+				}
+			})();
+		</script>
+		<!--以下为自己写的js-->
+		<script>
+			var response;
+			$(function () {  //$(function)是指等页面加载完成后才执行  跟把js函数放到body最后的效果差不多
+				$.ajax({
+					url:'/user/userInfo',
+					type:'get',
+					dataType:'json',
+					async:true,   //默认是true 即异步调用 暂且理解是多线程 异步的话ajax函数还没执行完就执行接下来的函数了 所以下面的函数在response还没被赋值的时候就用了 会报错 只能写在success里面
+					success:function (res) {
+//                    alert(JSON.stringify(response));
+						response = res;
+						$('#realName').text(response.body.user.realName);
+						$('#pro').text(response.body.user.pro);
+						$('#city').text(response.body.user.city);
+						$('#age').text(response.body.user.age);
+						$('#email').text(response.body.user.email);
+						$('#phoneNumber').text(response.body.user.phoneNumber);
+						if (response.body.user.about != null && response.body.user.about != ""){
+							$('#about').text(response.body.user.about);
+						};
+						$('#user_realName_kisson').text(response.body.user.realName);
+						$('#user_ico_kisson').attr("src",response.body.user.ico);
+						$('#avatar').attr("src",response.body.user.ico)
+
+					}
+				});
+			})
+		</script>
+		<!-- basic styles -->
+		<link href="assets/css/bootstrap.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="assets/css/font-awesome.min.css" />
+
+		<!--[if IE 7]>
+		  <link rel="stylesheet" href="assets/css/font-awesome-ie7.min.css" />
+		<![endif]-->
+
+		<!-- page specific plugin styles -->
+		<link rel="stylesheet" href="assets/css/jquery-ui-1.10.3.custom.min.css" />
+		<link rel="stylesheet" href="assets/css/jquery.gritter.css" />
+		<link rel="stylesheet" href="assets/css/select2.css" />
+		<link rel="stylesheet" href="assets/css/bootstrap-editable.css" />
+
+
+		<!-- ace styles -->
+
+		<link rel="stylesheet" href="assets/css/ace.min.css" />
+		<link rel="stylesheet" href="assets/css/ace-rtl.min.css" />
+		<link rel="stylesheet" href="assets/css/ace-skins.min.css" />
+
+		<!--[if lte IE 8]>
+		  <link rel="stylesheet" href="assets/css/ace-ie.min.css" />
+		<![endif]-->
+
+		<!-- inline styles related to this page -->
+
+		<!-- ace settings handler -->
+
+		<script src="assets/js/ace-extra.min.js"></script>
+		<script src="js/ajaxfileupload1.js"></script>
+
+		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+
+		<!--[if lt IE 9]>
+		<script src="assets/js/html5shiv.js"></script>
+		<script src="assets/js/respond.min.js"></script>
+		<!--<script src="js/jquery-form.js"></script>-->
+		<![endif]-->
+	</head>
+
+	<body>
+		<div class="navbar navbar-default" id="navbar">
+			<script type="text/javascript">
+				try{ace.settings.check('navbar' , 'fixed')}catch(e){}
+			</script>
+
+			<div class="navbar-container" id="navbar-container">
+				<div class="navbar-header pull-left">
+					<a href="#" class="navbar-brand">
+						<small>
+							<i class="icon-leaf"></i>
+							课程设计 学生信息管理系统
+						</small>
+					</a><!-- /.brand -->
+				</div><!-- /.navbar-header -->
+
+				<div class="navbar-header pull-right" role="navigation">
+					<ul class="nav ace-nav">
+
+						<li class="light-blue">
+							<a data-toggle="dropdown" href="#" class="dropdown-toggle">
+								<img class="nav-user-photo"  id="user_ico_kisson" alt="user_ico" />
+								<span class="user-info">
+									<small>欢迎光临,</small>
+									<div id="user_realName_kisson">admin</div>
+								</span>
+
+								<i class="icon-caret-down"></i>
+							</a>
+
+							<ul class="user-menu pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+
+								<li>
+									<a href="javascript:void(0);" id="myInfo_a_kisson">
+										<i class="icon-user"></i>
+										个人资料
+									</a>
+								</li>
+
+								<li class="divider"></li>
+
+								<li>
+									<a href="/user/exit">
+										<i class="icon-off"></i>
+										退出
+									</a>
+								</li>
+							</ul>
+						</li>
+					</ul><!-- /.ace-nav -->
+				</div><!-- /.navbar-header -->
+			</div><!-- /.container -->
+		</div>
+
+		<div class="main-container" id="main-container">
+			<script type="text/javascript">
+				try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+			</script>
+
+			<div class="main-container-inner">
+				<a class="menu-toggler" id="menu-toggler" href="#">
+					<span class="menu-text"></span>
+				</a>
+
+				<div class="sidebar" id="sidebar">
+					<script type="text/javascript">
+						try{ace.settings.check('sidebar' , 'fixed')}catch(e){}
+					</script>
+
+
+					<ul class="nav nav-list">
+						<li class="active">
+							<a href="/index.html">
+								<i class="icon-desktop"></i>
+								<span class="menu-text"> 首页 </span>
+							</a>
+						</li>
+
+						<li>
+							<a href="javascript:;" id="myInfo_left_kisson">
+								<i class="icon-user"></i>
+								<span class="menu-text"> 个人资料 </span>
+							</a>
+						</li>
+
+						<li>
+							<a href="/query.html">
+								<i class="icon-search nav-search-icon"></i>
+								<span class="menu-text">查询学生信息</span>
+							</a>
+						</li>
+
+
+						<li>
+							<a href="/excel.html" class="dropdown-toggle">
+								<i class="icon-list"></i>
+								<span class="menu-text"> 导入excel表格 </span>
+
+							</a>
+
+						</li>
+
+						<li>
+							<a href="/userInfo/userList" class="dropdown-toggle">
+								<i class="icon-list-alt"></i>
+								<span class="menu-text">查询用户信息</span>
+							</a>
+						</li>
+
+						<li>
+							<a href="/log.html">
+								<i class="icon-file-alt"></i>
+								<span class="menu-text">查看用户操作日志</span>
+							</a>
+						</li>
+
+						<li>
+							<a href="calendar.html">
+								<i class="icon-calendar"></i>
+
+								<span class="menu-text">
+									日历
+									<span class="badge badge-transparent tooltip-error" title="2&nbsp;Important&nbsp;Events">
+										<i class="icon-warning-sign red bigger-130"></i>
+									</span>
+								</span>
+							</a>
+						</li>
+
+						<li>
+							<a href="gallery.html">
+								<i class="icon-picture"></i>
+								<span class="menu-text"> 相册 </span>
+							</a>
+						</li>
+
+						<li>
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-tag"></i>
+								<span class="menu-text"> 更多页面 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+								<li>
+									<a href="profile.html">
+										<i class="icon-double-angle-right"></i>
+										用户信息
+									</a>
+								</li>
+
+								<li>
+									<a href="inbox.html">
+										<i class="icon-double-angle-right"></i>
+										收件箱
+									</a>
+								</li>
+
+								<li>
+									<a href="pricing.html">
+										<i class="icon-double-angle-right"></i>
+										售价单
+									</a>
+								</li>
+
+								<li>
+									<a href="invoice.html">
+										<i class="icon-double-angle-right"></i>
+										购物车
+									</a>
+								</li>
+
+								<li>
+									<a href="timeline.html">
+										<i class="icon-double-angle-right"></i>
+										时间轴
+									</a>
+								</li>
+
+								<li>
+									<a href="login.html">
+										<i class="icon-double-angle-right"></i>
+										登录 &amp; 注册
+									</a>
+								</li>
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-file-alt"></i>
+
+								<span class="menu-text">
+									其他页面
+									<span class="badge badge-primary ">5</span>
+								</span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+								<li>
+									<a href="faq.html">
+										<i class="icon-double-angle-right"></i>
+										帮助
+									</a>
+								</li>
+
+								<li>
+									<a href="error-404.html">
+										<i class="icon-double-angle-right"></i>
+										404错误页面
+									</a>
+								</li>
+
+								<li>
+									<a href="error-500.html">
+										<i class="icon-double-angle-right"></i>
+										500错误页面
+									</a>
+								</li>
+
+								<li>
+									<a href="grid.html">
+										<i class="icon-double-angle-right"></i>
+										网格
+									</a>
+								</li>
+
+								<li>
+									<a href="blank.html">
+										<i class="icon-double-angle-right"></i>
+										空白页面
+									</a>
+								</li>
+							</ul>
+						</li>
+					</ul><!-- /.nav-list -->
+
+					<div class="sidebar-collapse" id="sidebar-collapse">
+						<i class="icon-double-angle-left" data-icon1="icon-double-angle-left" data-icon2="icon-double-angle-right"></i>
+					</div>
+
+					<script type="text/javascript">
+						try{ace.settings.check('sidebar' , 'collapsed')}catch(e){}
+					</script>
+				</div>
+
+				<div class="main-content">
+					<div class="page-content">
+						<div class="page-header" id="index_header_kisson">
+							<h1>
+
+								首页
+
+							</h1>
+						</div><!-- /.page-header -->
+						<div class="page-header" id="myInfo_header_kisson" style="display: none">
+							<h1>
+
+								个人资料
+
+							</h1>
+						</div><!-- /.page-header -->
+
+						<div class="row" id="index_row_kisson">
+							<!--这里加 首页欢迎语 使用指南什么的-->
+
+						</div><!-- /row -->
+
+
+
+
+						<!--个人资料的row-->
+						<div class="row" id="myinfo_row_kisson" style="display:none" >
+							<div class="col-xs-12">
+								<!-- PAGE CONTENT BEGINS -->
+								<div class="clearfix">
+									<div class="pull-right">
+										<span class="green middle bolder">请选择: &nbsp;</span>
+
+										<div class="btn-toolbar inline middle no-margin">
+											<div data-toggle="buttons" class="btn-group no-margin">
+												<label class="btn btn-sm btn-yellow active">
+													<span class="bigger-110">基本信息</span>
+
+													<input type="radio" value="1" />
+												</label>
+
+												<label class="btn btn-sm btn-yellow">
+													<span class="bigger-110">修改密码</span>
+
+													<input type="radio" value="3" />
+												</label>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="hr dotted"></div>
+
+								<div>
+									<div id="user-profile-1" class="user-profile row">
+										<div class="col-xs-12 col-sm-3 center">
+											<div>
+												<div   class="profile-picture" id="pre_show_kisson" style="display: none">
+									<!--头像-->
+												</div>
+												<div class="profile-picture" id="avatar_kisson">
+													<img id="avatar" class="editable img-responsive" alt="user's ico" />
+												</div>
+
+												<!--用户修改头像提交的表单-->
+												<div>
+													<a href="javascript:;" class="file" >修改头像
+														<input type="file" name="userIco" id="user_ico" onchange="loadImageFile();show_button()"/>
+													</a>
+												</div>
+												<button id="upload_ico_kisson" class="btn btn-primary" style="display: none">
+													<i class="icon-ok bigger-110"></i>
+													保存
+												</button>
+												<button id="undo_ico_kisson" class="btn" style="display: none">
+													<i class="icon-undo bigger-110"></i>
+													取消
+												</button>
+
+												<div class="space-4"></div>
+
+												<div class="space-6"></div>
+
+											</div>
+
+										</div>
+
+										<div class="col-xs-12 col-sm-9">
+
+											<div class="space-12"></div>
+
+											<div class="profile-user-info profile-user-info-striped">
+												<div class="profile-info-row">
+													<div class="profile-info-name"> 姓名 </div>
+
+													<div class="profile-info-value">
+														<span class="editable" id="realName">admin</span>
+													</div>
+												</div>
+
+												<div class="profile-info-row">
+													<div class="profile-info-name"> 籍贯 </div>
+
+													<div class="profile-info-value">
+														<i class="icon-map-marker light-orange bigger-110"></i>
+														<span class="editable" id="pro">四川</span>
+														<span class="editable" id="city">成都</span>
+													</div>
+												</div>
+
+												<div class="profile-info-row">
+													<div class="profile-info-name"> 年龄 </div>
+
+													<div class="profile-info-value">
+														<span class="editable" id="age">21</span>
+													</div>
+												</div>
+
+												<div class="profile-info-row">
+													<div class="profile-info-name"> 邮箱 </div>
+
+													<div class="profile-info-value">
+														<span class="editable" id="email">123465789@123.com</span>
+													</div>
+												</div>
+
+												<div class="profile-info-row">
+													<div class="profile-info-name"> 电话号码 </div>
+
+													<div class="profile-info-value">
+														<span class="editable" id="phoneNumber">点击修改</span>
+													</div>
+												</div>
+
+												<div class="profile-info-row">
+													<div class="profile-info-name"> 关于我 </div>
+
+													<div class="profile-info-value">
+														<span class="editable" id="about">点击添加自我介绍</span>
+													</div>
+												</div>
+											</div>
+											<div class="space-20"></div>
+											<!--这里加提交修改资料的btn-->
+											<div class="col-md-offset-3">
+												<button class="btn btn-info" type="button" id="setMyInfo_kisson">
+													<i class="icon-ok bigger-110"></i>
+													保存
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="hide">
+									<div id="user-profile-3" class="user-profile row">
+										<div class="col-sm-offset-1 col-sm-10">
+											<div class="space"></div>
+
+											<div class="form-horizontal">
+													<ul class="nav nav-tabs padding-16">
+
+														<li>
+															<span>
+																<i class="blue icon-key bigger-125"></i>  <!--这里显示钥匙的图标-->
+																修改密码
+															</span>
+														</li>
+													</ul>
+														<div id="edit-password" class="tab-pane">
+															<div class="space-10"></div>
+
+															<div class="form-group">
+																<label class="col-sm-3 control-label no-padding-right" for="oldpassword_kisson">原来的密码:</label><!--for属性是点击该label就可以把光标放到for属性的value值的控件里-->
+
+																<div class="col-sm-9">
+																	<input type="password" id="oldpassword_kisson" />
+																</div>
+															</div>
+
+															<div class="space-4"></div>
+
+															<div class="form-group">
+																<label class="col-sm-3 control-label no-padding-right" for="newpassword1_kisson">新的密码：</label>
+
+																<div class="col-sm-9">
+																	<input type="password" id="newpassword1_kisson" />
+																</div>
+															</div>
+
+															<div class="space-4"></div>
+
+															<div class="form-group">
+																<label class="col-sm-3 control-label no-padding-right" for="newpassword2_kisson">请再次输入新的密码:</label>
+
+																<div class="col-sm-9">
+																	<input type="password" id="newpassword2_kisson" />
+																</div>
+															</div>
+														</div>
+													<!--</div>-->
+												<!--</div>-->
+
+												<div class="clearfix form-actions">
+													<div class="col-md-offset-3 col-md-9">
+														<button class="btn btn-info" type="button" id="setpsw_kisson">
+															<i class="icon-ok bigger-110"></i>
+															确认
+														</button>
+
+														&nbsp; &nbsp;
+														<button class="btn" type="reset" id="undo_setpsw_kisson">
+															<i class="icon-undo bigger-110"></i>
+															取消
+														</button>
+													</div>
+												</div>
+											</div>
+										</div><!-- /span -->
+									</div><!-- /user-profile -->
+								</div>
+
+								<!-- PAGE CONTENT ENDS -->
+							</div><!-- /.col -->
+						</div><!-- /.row -->
+						<!--个人资料的row结束-->
+
+						<div class="hr hr32 hr-dotted"></div>
+
+
+					</div><!-- /.page-content -->
+				</div><!-- /.main-content -->
+
+
+			</div><!-- /.main-container-inner -->
+
+
+		</div><!-- /.main-container -->
+
+
+		<!--[if IE]>
+<!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>-->
+
+
+		<!--[if !IE]> -->
+
+		<script type="text/javascript">
+			window.jQuery || document.write("<script src='assets/js/jquery-2.0.3.min.js'>"+"<"+"script>");
+		</script>
+
+		<!-- <![endif]-->
+
+		<!--[if IE]>
+<script type="text/javascript">
+ window.jQuery || document.write("<script src='assets/js/jquery-1.10.2.min.js'>"+"<"+"script>");
+</script>
+<![endif]-->
+
+		<script type="text/javascript">
+			if("ontouchend" in document) document.write("<script src='assets/js/jquery.mobile.custom.min.js'>"+"<"+"script>");
+		</script>
+		<script src="assets/js/bootstrap.min.js"></script>
+		<script src="assets/js/typeahead-bs2.min.js"></script>
+
+		<!-- page specific plugin scripts -->
+
+		<!--[if lte IE 8]>
+		  <script src="assets/js/excanvas.min.js"></script>
+		<![endif]-->
+
+		<script src="assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+		<script src="assets/js/jquery.ui.touch-punch.min.js"></script>
+		<script src="assets/js/jquery.slimscroll.min.js"></script>
+		<script src="assets/js/jquery.easy-pie-chart.min.js"></script>
+		<script src="assets/js/jquery.sparkline.min.js"></script>
+		<script src="assets/js/flot/jquery.flot.min.js"></script>
+		<script src="assets/js/flot/jquery.flot.pie.min.js"></script>
+		<script src="assets/js/flot/jquery.flot.resize.min.js"></script>
+
+
+
+		<script src="assets/js/jquery.gritter.min.js"></script>
+		<script src="assets/js/bootbox.min.js"></script>
+		<script src="assets/js/jquery.hotkeys.min.js"></script>
+		<script src="assets/js/bootstrap-wysiwyg.min.js"></script>
+		<script src="assets/js/select2.min.js"></script>
+		<script src="assets/js/date-time/bootstrap-datepicker.min.js"></script>
+		<script src="assets/js/fuelux/fuelux.spinner.min.js"></script>
+		<script src="assets/js/x-editable/bootstrap-editable.min.js"></script>
+		<script src="assets/js/x-editable/ace-editable.min.js"></script>
+		<script src="assets/js/jquery.maskedinput.min.js"></script>
+
+
+		<!-- ace scripts -->
+
+		<script src="assets/js/ace-elements.min.js"></script>
+		<script src="assets/js/ace.min.js"></script>
+
+		<!-- inline scripts related to this page -->
+
+
+
+		<!--个人资料的js-->
+		<script type="text/javascript">
+			jQuery(function($) {
+
+				//editables on first profile page
+				$.fn.editable.defaults.mode = 'inline';
+				$.fn.editableform.loading = "<div class='editableform-loading'><i class='light-blue icon-2x icon-spinner icon-spin'></i></div>";
+				$.fn.editableform.buttons = '<button type="submit" class="btn btn-info editable-submit"><i class="icon-ok icon-white"></i></button>'+
+						'<button type="button" class="btn editable-cancel"><i class="icon-remove"></i></button>';
+
+				//editables
+//				$('#realName').editable({   姓名不能改
+//					type: 'text',
+//					name: 'realName'
+//				});
+
+
+				var countries = [];
+				$.each({ "CA": "四川", "IN": "广西", "NL": "北京", "TR": "河南", "US": "山西"}, function(k, v) {
+					countries.push({id: k, text: v});
+				});
+
+				var cities = [];
+				cities["CA"] = [];
+				$.each(["成都", "雅安", "绵阳", "其他"] , function(k, v){
+					cities["CA"].push({id: v, text: v});
+				});
+				cities["IN"] = [];
+				$.each(["桂林", "南宁", "其他"] , function(k, v){
+					cities["IN"].push({id: v, text: v});
+				});
+				cities["NL"] = [];
+				$.each(["海淀区", "朝阳区", "其他"] , function(k, v){
+					cities["NL"].push({id: v, text: v});
+				});
+				cities["TR"] = [];
+				$.each(["郑州", "鹤壁", "其他"] , function(k, v){
+					cities["TR"].push({id: v, text: v});
+				});
+				cities["US"] = [];
+				$.each(["大同", "长治", "太原", "其他"] , function(k, v){
+					cities["US"].push({id: v, text: v});
+				});
+
+				var currentValue = null;//"CA";
+				$('#pro').editable({
+					type: 'select2',
+					value : null,//'CA',
+					source: countries,
+					success: function(response, newValue) {
+						if(currentValue == newValue) return;
+						currentValue = newValue;
+
+						var new_source = (!newValue || newValue == "") ? [] : cities[newValue];
+
+						//the destroy method is causing errors in x-editable v1.4.6
+						//it worked fine in v1.4.5
+						/**
+						 $('#city').editable('destroy').editable({
+							type: 'select2',
+							source: new_source
+						}).editable('setValue', null);
+						 */
+
+								//so we remove it altogether and create a new element
+						var city = $('#city').removeAttr('id').get(0);
+						$(city).clone().attr('id', 'city').text('Select City').editable({
+							type: 'select2',
+							value : null,
+							source: new_source
+						}).insertAfter(city);//insert it after previous instance
+						$(city).remove();//remove previous instance
+
+					}
+				});
+
+				$('#city').editable({
+					type: 'select2',
+					value : null,  //这里是点击后默认选中的选项
+					source: cities[currentValue]
+				});
+
+
+
+//				$('#email').editable({
+//					type: 'text',           email 不能改 用来登录的
+//					name: 'email'
+//				});
+
+				$('#age').editable({
+					type: 'spinner',
+					name : 'age',
+					spinner : {
+						min : 16, max:99, step:1
+					}
+				});
+
+				//var $range = document.createElement("INPUT");
+				//$range.type = 'range';
+				$('#phoneNumber').editable({
+					type: 'text',//$range.type == 'range' ? 'range' : 'slider',
+					name : 'phoneNumber',
+				});
+
+				$('#about').editable({
+					mode: 'inline',
+					type: 'wysiwyg',
+					name : 'about',
+					wysiwyg : {
+						//css : {'max-width':'300px'}
+					},
+					success: function(response, newValue) {
+					}
+				});
+
+
+
+				//////////////////////////////
+				$('#profile-feed-1').slimScroll({
+					height: '250px',
+					alwaysVisible : true
+				});
+
+				$('.profile-social-links > a').tooltip();
+
+				$('.easy-pie-chart.percentage').each(function(){
+					var barColor = $(this).data('color') || '#555';
+					var trackColor = '#E2E2E2';
+					var size = parseInt($(this).data('size')) || 72;
+					$(this).easyPieChart({
+						barColor: barColor,
+						trackColor: trackColor,
+						scaleColor: false,
+						lineCap: 'butt',
+						lineWidth: parseInt(size/10),
+						animate:false,
+						size: size
+					}).css('color', barColor);
+				});
+
+				//////////////////////////////////////////
+
+				///////////////////////////////////////////
+
+
+				////////////////////
+				//change profile   这里是点个人资料 基本信息 修改密码  控制翻页的
+				$('[data-toggle="buttons"] .btn').on('click', function(e){
+					var target = $(this).find('input[type=radio]');
+					var which = parseInt(target.val());
+					$('.user-profile').parent().addClass('hide');
+					$('#user-profile-'+which).parent().removeClass('hide');
+				});
+			});
+		</script>
+		
+		<!--以下是自己写的js-->
+		<script>
+			function showMyInfo() {
+				$('#myinfo_row_kisson').show();
+				$('#myinfo_row_kisson').siblings().hide();
+				$('#myInfo_header_kisson').show();  //显示个人资料的 header  //抽出来做函数是因为点右上角的个人资料和点左侧的个人资料都要用到 效果要一样 提高复用性
+			};
+			<!--个人资料出现的函数-->
+//			$('#index_header_kisson').show();  //显示pageheader 首页
+			$('#myInfo_a_kisson').click(function () {
+				showMyInfo();
+			});
+
+			$('#myInfo_left_kisson').click(function () {
+				showMyInfo();
+			})
+
+		</script>
+		<script>
+			<!--点击修改密码的确定按钮的时候触发的函数-->
+			$('#setpsw_kisson').click(function () {
+				var oldPasword = $('#oldpassword_kisson').val(); //获取文本框输入的值
+				var newPassword1 = $('#newpassword1_kisson').val();
+				var newPassword2 = $('#newpassword2_kisson').val();
+				if (oldPasword == ""){
+					alert("请输入原来的密码");
+					return false;
+				};
+				if (newPassword1 != newPassword2 || newPassword1 == "") {
+					alert("两次输入的新密码不一致");
+					return false;
+				};
+				$.ajax({
+					url:'/user/setPsw',
+					//jquery有方法直接把表单序列化成字符串？
+					data:"oldPassword"+"="+oldPasword+"&"+"newPassword"+"="+newPassword1,
+					type:'post',
+					dataTye:'json',
+					async:false,
+					success:function (setPsw_response) {
+						if (setPsw_response.status == 0) {
+							alert("修改成功，请点击确定重新登录");
+							window.location.href = 'login.html';
+						}
+						else {
+							alert("原来的密码不正确");
+						}
+					},
+					error:function () {
+						alert("请求发送失败");
+					}
+				})
+			})
+		</script>
+
+		<script>
+
+
+			$('#upload_ico_kisson').click(function () {
+				$('#upload_ico_kisson').hide();
+				$('#undo_ico_kisson').hide();
+				console.log("隐藏保存和取消的按钮，input file onchange的时候再显示");
+				$.ajaxFileUpload({
+					url:'/upload/ico',
+					secureuri:false,
+					type:'post',
+					fileElementId:'user_ico',
+//					dataType:'json',            //默认用text html处理 设置json会报错
+					success:function (data) {
+						var str = $(data).find("body").text();
+						var response =  $.parseJSON(str);
+						console.log(str);
+						if (response.status == 0){
+							$('#avatar').attr("src",response.errmsg);
+							$('#user_ico_kisson').attr("src",response.errmsg);
+							console.log("修改当前头像img的src和右上角小头像的src");
+							alert("修改成功");
+						} else {
+							alert("修改失败");
+						}
+					},
+					error:function () {
+						alert("请求未成功发送");
+					}
+				})
+			})
+
+			$('#undo_ico_kisson').click(function () {
+				$('#pre_show_kisson').hide();
+				$('#avatar_kisson').show();
+				console.log("点击取消修改头像按钮，隐藏保存和取消的按钮");
+				$('#upload_ico_kisson').hide();
+				$('#undo_ico_kisson').hide();
+			})
+			
+			$('#undo_setpsw_kisson').click(function () {
+				$('#oldpassword_kisson').val("");  //点击取消修改密码按钮将输入框置空
+				$('#newpassword1_kisson').val("");
+				$('#newpassword2_kisson').val("");
+				console.log("点击取消修改密码按钮，将密码输入框置空");
+			})
+		</script>
+
+	<script>
+		<!--提交修改资料-->
+		$('#setMyInfo_kisson').click(function () {
+			var phoneNumber = $('#phoneNumber').text();
+			var age = $('#age').text();
+			var pro = $('#pro').text();
+			var city = $('#city').text();
+			var about = $('#about').text();
+			var json = {};
+			json.phoneNumber = phoneNumber;
+			json.age = age;
+			json.pro = pro;
+			json.city = city;
+			json.about = about;
+			var jsonStr = JSON.stringify(json);
+			console.log(jsonStr);
+			$.ajax({
+				type:'post',
+				url:'/user/setInfo',
+				data:jsonStr,
+				dataType:'json',
+				contentType:'application/json',
+				success:function (data) {
+					if (data.status == 0){
+						alert("修改成功,点击返回首页");
+						window.location.href = '/index.html';
+					} else {
+						alert(data.errmsg);
+					}
+					console.log(data);
+				},
+				error:function () {
+					alert('请求发送失败');
+				}
+			})
+		})
+	</script>
+
+
+</body>
+</html>
+

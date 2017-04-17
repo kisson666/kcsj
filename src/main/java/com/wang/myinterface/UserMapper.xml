@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wang.myinterface.UserInterface">
+
+    <resultMap id="userList" type="com.wang.model.User">
+        <result property="email" column="email"/>
+        <result property="phoneNumber" column="phoneNumber"/>
+        <result property="ico" column="ico"/>
+        <result property="realName" column="realName"/>
+        <result property="age" column="age"/>
+        <result property="pro" column="pro"/>
+        <result property="city" column="city"/>
+        <result property="about" column="about"/>
+        <result property="id" column="id"/>
+    </resultMap>
+    <resultMap id="userEmailList" type="com.wang.model.User">
+        <result property="email" column="email"/>
+        <result property="realName" column="realName"/>
+        <result property="id" column="id"/>
+    </resultMap>
+    <!--有坑 如果想只返回一个表的部分字段 配resultmap是没用的 因为如果是select * 的话都会返回所有字段-->
+
+    <select id="findByEmailAndPassword"  resultType="com.wang.model.User">
+        select * from user where email = #{0} and password = #{1}
+    </select>
+
+    <select id="findAll" resultMap="userEmailList">
+        select email,realName,id from user
+    </select>
+
+    <select id="findById" resultMap="userList">
+        select id,email,phoneNumber,ico,realName,age,pro,city,about from user where id = #{id}
+    </select>
+
+    <!--插入并且返回主键id-->
+    <insert id="addUser" parameterType="com.wang.model.User" useGeneratedKeys="true" keyProperty="id">
+        insert into user(email,password,realName) values(#{email},#{password},#{realName})
+    </insert>
+
+
+    <!--返回影响的行数-->
+    <update id="updatePassword"  parameterType="com.wang.model.User">
+        update user set password = #{password} where email = #{email}
+    </update>
+    <update id="updateIco" parameterType="com.wang.model.User">
+        update user set ico = #{ico} where email = #{email}
+    </update>
+    <update id="updateInfo" parameterType="com.wang.model.User">
+        update user set phoneNumber = #{phoneNumber}, age = #{age}, pro = #{pro}, city = #{city}, about = #{about} where email = #{email}
+    </update>
+</mapper>

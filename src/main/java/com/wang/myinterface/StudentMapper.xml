@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wang.myinterface.StudentInterface">
+    <resultMap id="StuList" type="com.wang.model.Student">
+        <result property="stuId" column="stuId"/>
+        <result property="name" column="name"/>
+        <result property="sex" column="sex"/>
+        <result property="major" column="major"/>
+        <result property="academy" column="academy"/>
+        <result property="entry_year" column="entry_year"/>
+        <result property="hometown" column="hometown"/>
+        <result property="phone" column="phone"/>
+    </resultMap>
+
+
+    <select id="findById" parameterType="int" resultType="com.wang.model.Student">
+        select * from stu where id = #{id}
+    </select>
+
+    <!--插入并且返回主键id-->
+    <insert id="addStu" parameterType="com.wang.model.Student" useGeneratedKeys="true" keyProperty="id">
+        insert into stu(stuId,name,sex,major,academy,entry_year,hometown,phone) values(#{stuId},#{name},#{sex},#{major},#{academy},#{entry_year},#{hometown},#{phone})
+    </insert>
+
+    <select id="findStuBySex" resultMap="StuList" parameterType="String">
+        select * from stu where sex = #{sex} order by asc
+    </select>
+
+    <select id="findByAcademy" resultMap="StuList" parameterType="String">
+        select * from stu where academy = #{academy} order by id asc
+    </select>
+
+    <select id="findByMajor" resultMap="StuList" parameterType="String">
+        select * from stu where major = #{major} order by id asc
+    </select>
+
+    <select id="findByName" resultMap="StuList" parameterType="String">
+        select * from stu where name = #{name} order by id asc
+    </select>
+
+    <select id="findByStuId" resultMap="StuList" parameterType="String">
+        select * from stu where stuId = #{stuId}
+    </select>
+
+    <select id="findBySex" resultMap="StuList" parameterType="String">
+        select * from stu where sex = #{sex}
+    </select>
+    <select id="findAll" resultMap="StuList">
+        select * from stu order by id asc
+    </select>
+
+    <update id="updateStu" parameterType="com.wang.model.Student">
+        update stu set stuId = #{stuId},name = #{name},major = #{major},academy = #{academy},entry_year = #{entry_year},
+        hometown = #{hometown},sex = #{sex},phone = #{phone} where id = #{id}
+    </update>
+
+    <delete id="delStu" parameterType="int">
+        delete from stu where id = #{id}
+    </delete>
+
+
+    <!--批量插入-->
+    <insert id="insertStus" parameterType="java.util.List">
+        <selectKey resultType="java.lang.Integer" keyProperty="id"
+                   order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        replace into  stu (stuId,name,major,academy,entry_year,hometown,sex,phone)
+        values
+        <foreach collection="list" item="student" index="index" separator=",">
+            (
+            #{student.stuId},#{student.name},#{student.major},#{student.academy},
+            #{student.entry_year},#{student.hometown},#{student.sex},#{student.phone}
+            )
+        </foreach>
+
+    </insert>
+</mapper>

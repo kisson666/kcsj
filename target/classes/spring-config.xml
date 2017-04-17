@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <context:property-placeholder location="classpath:db.properties"/>
+    <!--&lt;!&ndash;配置数据源&ndash;&gt;org.springframework.jdbc.datasource.DriverManagerDataSource-->
+    <!--<bean id="dataSource" class="">-->
+        <!--<property name="driverClassName" value="${jdbc.driverClass}"></property>-->
+        <!--<property name="url" value="${jdbc.jdbcUrl}"></property>-->
+        <!--<property name="username" value="${jdbc.user}"></property>-->
+        <!--<property name="password" value="${jdbc.password}"></property>-->
+    <!--</bean>-->
+
+    <!-- Hikari Datasource -->
+    <bean id="dataSourceHikari" class="com.zaxxer.hikari.HikariDataSource"  destroy-method="shutdown">
+        <!--无需指定，除非系统无法自动识别-->
+        <property name="driverClassName" value="${jdbc.driverClass}" />
+        <property name="jdbcUrl" value="${jdbc.jdbcUrl}" />
+        <property name="username" value="${jdbc.user}" />
+        <property name="password" value="${jdbc.password}" />
+        <!-- 连接只读数据库时配置为true， 保证安全 -->
+        <property name="readOnly" value="false" />
+        <!-- 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException， 缺省:30秒 -->
+        <property name="connectionTimeout" value="30000" />
+        <!-- 一个连接idle状态的最大时长（毫秒），超时则被释放（retired），缺省:10分钟  -->
+        <property name="idleTimeout" value="600000" />
+        <!-- 一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），缺省:30分钟，建议设置比数据库超时时长少30秒，参考MySQL wait_timeout参数（show variables like '%timeout%';） -->
+        <property name="maxLifetime" value="1800000" />
+        <!-- 连接池中允许的最大连接数。缺省值：10；推荐的公式：((core_count * 2) + effective_spindle_count) -->
+        <property name="maximumPoolSize" value="15" />
+        <!--<property name="minimumPoolSize" value="2"/>-->
+    </bean>
+
+
+
+
+
+
+    <!--mybatis可以和spring很好的整合，所以整合的时候不需要再写mybatis的配置文件，但是mapping文件还是要的-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSourceHikari"></property>
+        <!--自动扫描mapping.xml文件-->
+        <property name="mapperLocations" value="classpath:com/wang/myinterface/*.xml"></property>
+    </bean>
+    <!--接口所在的包名 spring会自动扫描-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.wang.myinterface"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+    </bean>
+
+    <!--事务管理-->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSourceHikari"/>
+    </bean>
+    <context:component-scan base-package="com.wang"/>
+
+
+    <!--<bean id="logservice" class="com.wang.log.LogServiceImpl"></bean>-->
+
+    <!--<aop:config>-->
+        <!--&lt;!&ndash;切入点&ndash;&gt;-->
+        <!--<aop:pointcut id="mypointcut" expression="execution(* com.wang.service.UserService.getUserById(..))"/>-->
+        <!--&lt;!&ndash;切面 将哪个对象中的哪个方法 织入到哪个切入点&ndash;&gt;-->
+        <!--<aop:aspect id="foo" ref="logServiceImpl">-->
+            <!--&lt;!&ndash;前置通知&ndash;&gt;-->
+            <!--<aop:before method="logbefore" pointcut-ref="mypointcut"/>-->
+            <!--&lt;!&ndash;后置通知&ndash;&gt;-->
+            <!--<aop:after method="logafter" pointcut-ref="mypointcut"/>-->
+        <!--</aop:aspect>-->
+    <!--</aop:config>-->
+</beans>
